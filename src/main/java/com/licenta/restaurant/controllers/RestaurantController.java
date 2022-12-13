@@ -23,14 +23,15 @@ public class RestaurantController {
     public @ResponseBody ResponseEntity<RestaurantDTO> createNewRestaurant(
             @RequestBody CreateRestaurantDTO createRestaurantDTO) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(restaurantService.createRestaurant(createRestaurantDTO));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(restaurantService.createRestaurant(createRestaurantDTO));
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteRestaurant(@RequestBody DeleteRestaurantDTO deleteRestaurantDTO)
-            throws JSONException {
+    public ResponseEntity<String> deleteRestaurant(@RequestBody DeleteRestaurantDTO deleteRestaurantDTO,
+                                                   @RequestHeader("email") String emailAddress) throws JSONException {
 
-        restaurantService.deleteRestaurant(deleteRestaurantDTO);
+        restaurantService.deleteRestaurant(deleteRestaurantDTO, emailAddress);
 
         return ResponseEntity.ok().body("Restaurant deleted !");
     }

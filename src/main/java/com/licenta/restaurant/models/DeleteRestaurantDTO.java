@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 public class DeleteRestaurantDTO {
 
     private Long id;
-    private String emailAddress;
     private String password;
 }

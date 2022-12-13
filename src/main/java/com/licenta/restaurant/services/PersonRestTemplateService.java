@@ -1,13 +1,12 @@
 package com.licenta.restaurant.services;
 
-import com.licenta.restaurant.Config;
+import com.licenta.restaurant.ApiConfig;
 import com.licenta.restaurant.models.Person;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -24,25 +23,19 @@ public class PersonRestTemplateService {
     }
 
     public Person getPersonById(Long id) {
-        URI uri = UriComponentsBuilder.newInstance()
-                .scheme("http")
-                .host("localhost")
-                .port(3005)
-                .path("v1/core-api")
+        URI uri = ApiConfig.coreApiPath()
                 .path(PERSON_ROUTE)
                 .path("id/{id}")
                 .build(id);
 
-        return restTemplate.getForEntity(uri, Person.class).getBody();
+        HttpEntity<String> entityCredentials = new HttpEntity<>(null, createHeaderBody());
+
+        return restTemplate.exchange(uri, HttpMethod.GET, entityCredentials, Person.class).getBody();
     }
 
-    public Boolean validateAccount(String emailAddress, String password) throws JSONException {
+    public Long validateAccount(String emailAddress, String password) throws JSONException {
 
-        URI uri = UriComponentsBuilder.newInstance()
-                .scheme("http")
-                .host("localhost")
-                .port(3005)
-                .path("v1/core-api")
+        URI uri = ApiConfig.coreApiPath()
                 .path(PERSON_ROUTE)
                 .path("validate")
                 .build().toUri();
@@ -53,25 +46,30 @@ public class PersonRestTemplateService {
 
         HttpEntity<String> entityCredentials = new HttpEntity<>(body.toString(), createHeaderBody());
 
-        return Boolean.TRUE.equals(
-                restTemplate.exchange(uri, HttpMethod.POST, entityCredentials, Boolean.class).getBody());
+        return restTemplate.exchange(uri, HttpMethod.POST, entityCredentials, Long.class).getBody();
     }
 
-    public Person getPersonByName(String name) {
-        UriComponentsBuilder uriComponentsBuilder = Config.CORE_API_PATH;
+    public void changePersonStatus(Boolean newStatus, Long id) throws JSONException {
 
-        URI uri = uriComponentsBuilder
+        URI uri = ApiConfig.coreApiPath()
                 .path(PERSON_ROUTE)
-                .path("name/{name}")
-                .build(name);
+                .path("updateRestaurantStatus")
+                .build().toUri();
 
-        return restTemplate.getForEntity(uri, Person.class).getBody();
+        JSONObject body = new JSONObject();
+        body.put("id", id);
+        body.put("status", newStatus);
+
+        HttpEntity<String> entityCredentials = new HttpEntity<>(body.toString(), createHeaderBody());
+
+        restTemplate.exchange(uri, HttpMethod.POST, entityCredentials, Void.class);
     }
 
     private static HttpHeaders createHeaderBody() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
+        httpHeaders.add("authorities", "[PERMIT]");
 
         return httpHeaders;
     }

@@ -9,3 +9,8 @@ server:
   port: 3002
   servlet:
     context-path: /v1/restaurant-api
+
+restaurant:
+  user-paths:
+    - "/restaurant/create"
+    - "/restaurant/delete"

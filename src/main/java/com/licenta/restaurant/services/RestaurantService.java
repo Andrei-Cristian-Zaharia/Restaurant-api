@@ -13,12 +13,15 @@ import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantDTO;
 import com.licenta.restaurant.repositories.RestaurantRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Service
 public class RestaurantService {
 
@@ -53,30 +56,36 @@ public class RestaurantService {
         restaurant.setPartnerSince(LocalDate.now());
         restaurant.setOwner(person);
 
+        try {
+            personRestTemplateService.changePersonStatus(true, createRestaurantDTO.getPerson_id());
+        } catch (JSONException e) {
+            log.error(e.getMessage(), e);
+        }
+
         return modelMapper.map(restaurantRepository.save(restaurant), RestaurantDTO.class);
     }
 
     @Transactional
-    public void deleteRestaurant(DeleteRestaurantDTO deleteRestaurantDTO) throws JSONException {
+    public void deleteRestaurant(DeleteRestaurantDTO deleteRestaurantDTO,
+                                 @Valid String emailAddress) throws JSONException {
 
         if (restaurantRepository.findById(deleteRestaurantDTO.getId()).isEmpty()) {
             throw new NotFoundException(ObjectType.RESTAURANT, deleteRestaurantDTO.getId());
         }
 
-        if (Boolean.FALSE.equals(personRestTemplateService.validateAccount(
-                deleteRestaurantDTO.getEmailAddress(),
-                deleteRestaurantDTO.getPassword()
-                ))) {
+        Long personId = personRestTemplateService.validateAccount(emailAddress, deleteRestaurantDTO.getPassword());
 
+        if (personId == null) {
             throw new InvalidUserAccount();
         }
 
         if (Boolean.FALSE.equals(restaurantRepository.existsByOwnerEmailAddressAndId(
-                deleteRestaurantDTO.getEmailAddress(),
-                deleteRestaurantDTO.getId()
-        ))) {
+                emailAddress,
+                deleteRestaurantDTO.getId()))) {
             throw new InvalidDeleteRequestException();
         }
+
+        personRestTemplateService.changePersonStatus(false, personId);
 
         restaurantRepository.deleteById(deleteRestaurantDTO.getId());
     }
