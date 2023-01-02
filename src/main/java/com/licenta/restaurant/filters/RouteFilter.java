@@ -28,6 +28,11 @@ public class RouteFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
+        String header = req.getHeader(AUTH_HEADER);
+        Enumeration<String> headers = req.getHeaderNames();
+        String uri = req.getRequestURI().toString();
+
+
         if (("[ADMIN]").equals(req.getHeader(AUTH_HEADER))) {
             chain.doFilter(request, response);
             return;

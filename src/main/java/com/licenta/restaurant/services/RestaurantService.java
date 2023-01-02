@@ -20,6 +20,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,6 +38,12 @@ public class RestaurantService {
         this.restaurantRepository = restaurantRepository;
         this.personRestTemplateService = personRestTemplateService;
         this.modelMapper = modelMapper;
+    }
+
+    public Restaurant getRestaurantById(Long id) {
+        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
+
+        return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, id));
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.licenta.restaurant.models;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class MenuItem {
     @Column(name = "category")
     private String category;
 
+    @Nullable
     @OneToOne
     @JoinColumn(name = "id_recipe")
     private Recipe recipe;

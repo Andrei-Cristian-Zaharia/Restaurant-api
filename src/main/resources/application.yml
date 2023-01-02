@@ -14,3 +14,8 @@ restaurant:
   user-paths:
     - "/restaurant/create"
     - "/restaurant/delete"
+    - "/menuItem/create"
+    - "/menuItem/delete"
+    - "/menu/create"
+    - "/menu/delete"
+    - "/menu/info"

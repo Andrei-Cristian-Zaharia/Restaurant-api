@@ -1,5 +1,6 @@
 package com.licenta.restaurant.controllers;
 
+import com.licenta.restaurant.models.Recipe;
 import com.licenta.restaurant.models.recipeModels.RecipeDTO;
 import com.licenta.restaurant.services.RecipeRestTemplateService;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class RestCalls {
     }
 
     @GetMapping("{id}")
-    public @ResponseBody ResponseEntity<RecipeDTO> getRecipeById(@PathVariable Long id) throws URISyntaxException {
+    public @ResponseBody ResponseEntity<Recipe> getRecipeById(@PathVariable Long id) {
         return ResponseEntity.ok().body(recipeRestTemplateService.getRecipeById(id));
     }
 }
