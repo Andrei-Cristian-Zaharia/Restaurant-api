@@ -1,6 +1,7 @@
 package com.licenta.restaurant.controllers;
 
 import com.licenta.restaurant.models.DeleteRestaurantDTO;
+import com.licenta.restaurant.models.Restaurant;
 import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantDTO;
 import com.licenta.restaurant.services.RestaurantService;
@@ -25,6 +26,11 @@ public class RestaurantController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(restaurantService.createRestaurant(createRestaurantDTO));
+    }
+
+    @GetMapping("/id/{id}")
+    public @ResponseBody ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(restaurantService.getRestaurantById(id));
     }
 
     @DeleteMapping("/delete")
