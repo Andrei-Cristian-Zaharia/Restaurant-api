@@ -21,6 +21,9 @@ public class Restaurant {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "front_image")
+    private String frontImage;
+
     @Column(name = "address")
     private String address;
 

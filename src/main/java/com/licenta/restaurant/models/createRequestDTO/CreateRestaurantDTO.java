@@ -11,6 +11,8 @@ public class CreateRestaurantDTO {
 
     private String description;
 
+    private String frontImage;
+
     private String address;
 
     private Long person_id;

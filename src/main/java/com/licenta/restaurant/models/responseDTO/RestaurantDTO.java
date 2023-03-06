@@ -14,6 +14,8 @@ public class RestaurantDTO {
 
     private String description;
 
+    private String frontImage;
+
     private String address;
 
     private LocalDate partnerSince;

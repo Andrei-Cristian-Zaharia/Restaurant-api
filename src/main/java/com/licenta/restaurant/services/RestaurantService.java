@@ -46,6 +46,12 @@ public class RestaurantService {
         return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, id));
     }
 
+    public Restaurant getRestaurantByOwner(String username) {
+        Optional<Restaurant> restaurant = restaurantRepository.getRestaurantByOwnerUsername(username);
+
+        return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, restaurant.get().getId()));
+    }
+
     @Transactional
     public RestaurantDTO createRestaurant(CreateRestaurantDTO createRestaurantDTO) {
 

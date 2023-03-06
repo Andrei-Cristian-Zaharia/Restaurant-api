@@ -33,6 +33,11 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurantService.getRestaurantById(id));
     }
 
+    @GetMapping("/owner")
+    public @ResponseBody ResponseEntity<Restaurant> getRestaurantByOwner(@RequestParam String name) {
+        return ResponseEntity.ok().body(restaurantService.getRestaurantByOwner(name));
+    }
+
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteRestaurant(@RequestBody DeleteRestaurantDTO deleteRestaurantDTO,
                                                    @RequestHeader("email") String emailAddress) throws JSONException {
