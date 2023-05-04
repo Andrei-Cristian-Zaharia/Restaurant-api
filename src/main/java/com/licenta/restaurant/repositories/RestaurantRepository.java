@@ -13,6 +13,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
      Boolean existsByName(String name);
 
      Boolean existsByOwner(Person owner);
+     Optional<Restaurant> findByName(String name);
 
      Boolean existsByOwnerEmailAddressAndId(String ownerEmailAddress, Long id);
 

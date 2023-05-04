@@ -33,6 +33,11 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurantService.getRestaurantById(id));
     }
 
+    @GetMapping("/name")
+    public @ResponseBody ResponseEntity<Restaurant> getRestaurantByName(@RequestParam String name) {
+        return ResponseEntity.ok().body(restaurantService.getRestaurantByName(name));
+    }
+
     @GetMapping("/owner")
     public @ResponseBody ResponseEntity<Restaurant> getRestaurantByOwner(@RequestParam String name) {
         return ResponseEntity.ok().body(restaurantService.getRestaurantByOwner(name));

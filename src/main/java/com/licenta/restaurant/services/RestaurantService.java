@@ -46,6 +46,12 @@ public class RestaurantService {
         return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, id));
     }
 
+    public Restaurant getRestaurantByName(String name) {
+        Optional<Restaurant> restaurant = restaurantRepository.findByName(name);
+
+        return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, name));
+    }
+
     public Restaurant getRestaurantByOwner(String username) {
         Optional<Restaurant> restaurant = restaurantRepository.getRestaurantByOwnerUsername(username);
 
