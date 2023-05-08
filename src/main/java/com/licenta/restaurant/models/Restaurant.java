@@ -61,6 +61,10 @@ public class Restaurant {
     private LocalDate partnerSince;
 
     @OneToOne
+    @JoinColumn(name = "id_menu")
+    private Menu menu;
+
+    @OneToOne
     @JoinColumn(name = "id_person")
     private Person owner;
 }

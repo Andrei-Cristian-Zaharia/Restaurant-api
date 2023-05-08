@@ -17,6 +17,12 @@ public class MenuItem {
     @Column(name = "price")
     private Float price;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "category")
     private String category;
 

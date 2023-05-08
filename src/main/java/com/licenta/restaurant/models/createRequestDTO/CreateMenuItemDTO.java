@@ -9,7 +9,11 @@ public class CreateMenuItemDTO {
 
     private Float price;
 
+    private String name;
+
     private String category;
+
+    private String description;
 
     private Long recipeId;
 }

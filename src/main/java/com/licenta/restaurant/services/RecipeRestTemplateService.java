@@ -28,7 +28,8 @@ public class RecipeRestTemplateService {
     public Recipe getRecipeById(Long id) {
         URI uri = ApiConfig.foodApiPath()
                 .path(RECIPE_ROUTE)
-                .path("id/{id}")
+                .path("findById")
+                .queryParam("id", id)
                 .build(id);
 
         HttpEntity<String> entityCredentials = new HttpEntity<>(null, createHeaderBody());

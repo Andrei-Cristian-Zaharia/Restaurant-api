@@ -16,6 +16,7 @@ restaurant:
     - "/restaurant/delete"
     - "/menuItem/create"
     - "/menuItem/delete"
+    - "/menu/updateItems"
     - "/menu/create"
     - "/menu/delete"
     - "/menu/info"

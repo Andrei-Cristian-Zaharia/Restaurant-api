@@ -7,6 +7,7 @@ import com.licenta.restaurant.exceptionHandlers.restaurantExceptions.InvalidDele
 import com.licenta.restaurant.exceptionHandlers.restaurantExceptions.InvalidUserAccount;
 import com.licenta.restaurant.exceptionHandlers.restaurantExceptions.UserAlreadyHasRestaurantException;
 import com.licenta.restaurant.models.DeleteRestaurantDTO;
+import com.licenta.restaurant.models.Menu;
 import com.licenta.restaurant.models.Person;
 import com.licenta.restaurant.models.Restaurant;
 import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
@@ -56,6 +57,23 @@ public class RestaurantService {
         Optional<Restaurant> restaurant = restaurantRepository.getRestaurantByOwnerUsername(username);
 
         return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, restaurant.get().getId()));
+    }
+
+    @Transactional
+    public void updateMenu(Menu menu, Long restaurantId) {
+        Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
+
+        if (restaurant.isEmpty()) {
+            throw new NotFoundException(ObjectType.RESTAURANT, restaurantId);
+        }
+
+        if (restaurant.get().getMenu() != null) {
+            // TODO: HANDLE EXCEPTION
+            return;
+        }
+
+        restaurant.get().setMenu(menu);
+        restaurantRepository.save(restaurant.get());
     }
 
     @Transactional

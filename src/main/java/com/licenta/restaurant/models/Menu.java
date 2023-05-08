@@ -15,8 +15,4 @@ public class Menu {
 
     @Column(name = "name")
     private String name;
-
-    @OneToOne
-    @JoinColumn(name = "id_restaurant")
-    private Restaurant restaurant;
 }

@@ -10,6 +10,5 @@ import java.util.List;
 public class CreateMenuDTO {
 
     private String name;
-    private List<Long> menuItemIds;
     private Long restaurantId;
 }
