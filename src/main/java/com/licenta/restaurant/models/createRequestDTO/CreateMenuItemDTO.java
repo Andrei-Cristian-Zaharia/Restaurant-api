@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateMenuItemDTO {
 
+    private Long id;
+
     private Float price;
 
     private String name;
