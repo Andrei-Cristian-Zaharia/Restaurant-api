@@ -22,6 +22,24 @@ public class Recipe {
     @Column(name = "howtoprepare")
     private String howToPrepare;
 
+    @Column(name = "time")
+    private int time;
+
+    @Column(name = "difficulty")
+    private int difficulty;
+
+    @Column(name = "spiciness")
+    private int spiciness;
+
+    @Column(name = "is_vegan")
+    private boolean isVegan;
+
+    @Column(name = "public")
+    private boolean publicRecipe;
+
+    @Column(name = "image_address")
+    private String imageAddress;
+
     @OneToOne
     @JoinColumn(name = "id_person")
     private Person person;

@@ -10,36 +10,34 @@ import com.licenta.restaurant.models.DeleteRestaurantDTO;
 import com.licenta.restaurant.models.Menu;
 import com.licenta.restaurant.models.Person;
 import com.licenta.restaurant.models.Restaurant;
+import com.licenta.restaurant.models.createRequestDTO.CreateMenuDTO;
 import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantDTO;
 import com.licenta.restaurant.repositories.RestaurantRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
     private final PersonRestTemplateService personRestTemplateService;
 
+    private final MenuService menuService;
     private final ModelMapper modelMapper;
 
-    public RestaurantService(RestaurantRepository restaurantRepository,
-                             PersonRestTemplateService personRestTemplateService,
-                             ModelMapper modelMapper) {
-        this.restaurantRepository = restaurantRepository;
-        this.personRestTemplateService = personRestTemplateService;
-        this.modelMapper = modelMapper;
-    }
 
     public Restaurant getRestaurantById(Long id) {
         Optional<Restaurant> restaurant = restaurantRepository.findById(id);
@@ -57,6 +55,10 @@ public class RestaurantService {
         Optional<Restaurant> restaurant = restaurantRepository.getRestaurantByOwnerUsername(username);
 
         return restaurant.orElseThrow(() -> new NotFoundException(ObjectType.RESTAURANT, restaurant.get().getId()));
+    }
+
+    public List<Restaurant> getAllRestaurants() {
+        return restaurantRepository.findAll();
     }
 
     @Transactional
@@ -99,7 +101,9 @@ public class RestaurantService {
             log.error(e.getMessage(), e);
         }
 
-        return modelMapper.map(restaurantRepository.save(restaurant), RestaurantDTO.class);
+        RestaurantDTO result = modelMapper.map(restaurantRepository.save(restaurant), RestaurantDTO.class);
+        updateMenu(menuService.createMenu(new CreateMenuDTO("Main menu", result.getId())), restaurant.getId());
+        return result;
     }
 
     @Transactional

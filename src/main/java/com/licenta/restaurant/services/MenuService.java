@@ -24,8 +24,6 @@ public class MenuService {
     private final MenuContainerService menuContainerService;
     private final MenuItemService menuItemService;
 
-    private final RestaurantService restaurantService;
-
     public Menu getMenuById(Long id) {
         return menuRepository.findById(id).orElseThrow(() -> new NotFoundException(ObjectType.MENU, id));
     }
@@ -99,8 +97,6 @@ public class MenuService {
         Menu menu = new Menu();
         menu.setName(createMenuDTO.getName());
         menu = menuRepository.save(menu);
-
-        restaurantService.updateMenu(menu, createMenuDTO.getRestaurantId());
 
         return menu;
     }

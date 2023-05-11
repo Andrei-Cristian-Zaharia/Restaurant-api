@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("restaurant")
 public class RestaurantController {
@@ -41,6 +43,11 @@ public class RestaurantController {
     @GetMapping("/owner")
     public @ResponseBody ResponseEntity<Restaurant> getRestaurantByOwner(@RequestParam String name) {
         return ResponseEntity.ok().body(restaurantService.getRestaurantByOwner(name));
+    }
+
+    @GetMapping("/all")
+    public @ResponseBody ResponseEntity<List<Restaurant>> getAllRestaurants() {
+        return ResponseEntity.ok().body(restaurantService.getAllRestaurants());
     }
 
     @DeleteMapping("/delete")
