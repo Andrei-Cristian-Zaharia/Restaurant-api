@@ -1,9 +1,12 @@
 package com.licenta.restaurant.controllers;
 
 import com.licenta.restaurant.models.DeleteRestaurantDTO;
+import com.licenta.restaurant.models.FilterRestaurantDTO;
 import com.licenta.restaurant.models.Restaurant;
+import com.licenta.restaurant.models.RestaurantStatusDTO;
 import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantDTO;
+import com.licenta.restaurant.models.responseDTO.RestaurantResponseDTO;
 import com.licenta.restaurant.services.RestaurantService;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpStatus;
@@ -30,6 +33,14 @@ public class RestaurantController {
                 .body(restaurantService.createRestaurant(createRestaurantDTO));
     }
 
+    @PostMapping("/all/filtered")
+    public @ResponseBody ResponseEntity<List<RestaurantResponseDTO>> getAllRestaurantsFiltered(
+            @RequestBody FilterRestaurantDTO filterRestaurantDTO) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(restaurantService.getAllRestaurantsFiltered(filterRestaurantDTO));
+    }
+
     @GetMapping("/id/{id}")
     public @ResponseBody ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long id) {
         return ResponseEntity.ok().body(restaurantService.getRestaurantById(id));
@@ -49,6 +60,12 @@ public class RestaurantController {
     public @ResponseBody ResponseEntity<List<Restaurant>> getAllRestaurants() {
         return ResponseEntity.ok().body(restaurantService.getAllRestaurants());
     }
+
+    @PostMapping("/save/status")
+    public @ResponseBody ResponseEntity<Restaurant> saveStatus(@RequestBody RestaurantStatusDTO restaurantStatusDTO) {
+        return ResponseEntity.ok().body(restaurantService.saveStatus(restaurantStatusDTO));
+    }
+
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteRestaurant(@RequestBody DeleteRestaurantDTO deleteRestaurantDTO,

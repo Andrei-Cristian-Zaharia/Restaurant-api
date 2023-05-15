@@ -1,18 +1,17 @@
 package com.licenta.restaurant.services;
 
 import com.licenta.restaurant.enums.ObjectType;
+import com.licenta.restaurant.enums.RestaurantStatus;
 import com.licenta.restaurant.exceptionHandlers.AlreadyExistsException;
 import com.licenta.restaurant.exceptionHandlers.NotFoundException;
 import com.licenta.restaurant.exceptionHandlers.restaurantExceptions.InvalidDeleteRequestException;
 import com.licenta.restaurant.exceptionHandlers.restaurantExceptions.InvalidUserAccount;
 import com.licenta.restaurant.exceptionHandlers.restaurantExceptions.UserAlreadyHasRestaurantException;
-import com.licenta.restaurant.models.DeleteRestaurantDTO;
-import com.licenta.restaurant.models.Menu;
-import com.licenta.restaurant.models.Person;
-import com.licenta.restaurant.models.Restaurant;
+import com.licenta.restaurant.models.*;
 import com.licenta.restaurant.models.createRequestDTO.CreateMenuDTO;
 import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantDTO;
+import com.licenta.restaurant.models.responseDTO.RestaurantResponseDTO;
 import com.licenta.restaurant.repositories.RestaurantRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -24,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -34,6 +35,7 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
     private final PersonRestTemplateService personRestTemplateService;
+    private final ReviewRestTemplateService reviewRestTemplateService;
 
     private final MenuService menuService;
     private final ModelMapper modelMapper;
@@ -59,6 +61,56 @@ public class RestaurantService {
 
     public List<Restaurant> getAllRestaurants() {
         return restaurantRepository.findAll();
+    }
+
+    public Restaurant saveStatus(RestaurantStatusDTO dto) {
+        Restaurant restaurant = getRestaurantById(dto.getId());
+        restaurant.setName(dto.getName());
+        restaurant.setEmailAddress(dto.getEmailAddress());
+        restaurant.setTelephone(dto.getTelephone());
+
+        switch (dto.getStatus()) {
+            case "WAITING" -> restaurant.setStatus(RestaurantStatus.WAITING.toString());
+            case "ACTIVE" -> restaurant.setStatus(RestaurantStatus.ACTIVE.toString());
+            case "INACTIVE" -> restaurant.setStatus(RestaurantStatus.INACTIVE.toString());
+        }
+
+        return restaurantRepository.save(restaurant);
+    }
+
+    public List<RestaurantResponseDTO> getAllRestaurantsFiltered(FilterRestaurantDTO filterRestaurantDTO) {
+
+        List<Restaurant> restaurantsFiltered = restaurantRepository.findAll();
+
+        return restaurantsFiltered.stream().filter((Restaurant res) -> {
+            if (!(filterRestaurantDTO.getFilterName().equals("") || filterRestaurantDTO.getFilterName().isEmpty())) {
+                return res.getName().toLowerCase(Locale.getDefault())
+                        .contains(filterRestaurantDTO.getFilterName()
+                                .toLowerCase(Locale.getDefault()));
+            }
+
+            return true;
+        }).filter((Restaurant res) -> {
+            if (filterRestaurantDTO.getRating() != null && filterRestaurantDTO.getRating() != 0) {
+                try {
+                    return filterRestaurantDTO
+                            .getRating()
+                            .equals(reviewRestTemplateService.getRatingForRestaurant(res.getId()));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            return true;
+        }).map((Restaurant res) -> {
+            RestaurantResponseDTO r = modelMapper.map(res, RestaurantResponseDTO.class);
+            try {
+                r.setRating(reviewRestTemplateService.getRatingForRestaurant(res.getId()));
+                return r;
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
     }
 
     @Transactional
