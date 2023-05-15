@@ -22,10 +22,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -36,6 +33,7 @@ public class RestaurantService {
 
     private final PersonRestTemplateService personRestTemplateService;
     private final ReviewRestTemplateService reviewRestTemplateService;
+    private final SavedRestaurantsService savedRestaurantsService;
 
     private final MenuService menuService;
     private final ModelMapper modelMapper;
@@ -78,13 +76,55 @@ public class RestaurantService {
         return restaurantRepository.save(restaurant);
     }
 
-    public List<RestaurantResponseDTO> getAllRestaurantsFiltered(FilterRestaurantDTO filterRestaurantDTO) {
+    public Boolean addFavoriteRestaurant(AddFavoriteDTO addFavoriteDTO) {
+        if (Boolean.FALSE.equals(personRestTemplateService.getPersonById((addFavoriteDTO.getUserId())) != null)) {
+            throw new NotFoundException(ObjectType.PERSON, addFavoriteDTO.getUserId());
+        }
 
-        List<Restaurant> restaurantsFiltered = restaurantRepository.findAll();
+        if (restaurantRepository.existsById(addFavoriteDTO.getRestaurantId())) {
+            savedRestaurantsService.existItem(addFavoriteDTO); // checks if the relation already exists
+
+            savedRestaurantsService.saveNewRelation(addFavoriteDTO.getUserId(), addFavoriteDTO.getRestaurantId());
+            return true;
+        }
+
+        throw new NotFoundException(ObjectType.RESTAURANT, addFavoriteDTO.getRestaurantId());
+    }
+
+    public List<String> getAllFavoriteRestaurantsNames(String email) {
+        return getAllRestaurantsById(
+                savedRestaurantsService.getAllRelationsForUserEmail(email)).stream().map(Restaurant::getName
+        ).toList();
+    }
+
+    public List<Restaurant> getAllRestaurantsById(List<Long> ids) {
+        return restaurantRepository.findAllByIdIn(ids);
+    }
+
+    public List<RestaurantResponseDTO> filterAllFavoriteRecipes(FilterRestaurantDTO filters, String email) {
+        return getAllRestaurantsFiltered(filters, true, email);
+    }
+
+    public List<RestaurantResponseDTO> filterAllRestaurants(FilterRestaurantDTO filters) {
+        return getAllRestaurantsFiltered(filters, false, null);
+    }
+
+    public List<Restaurant> getAllFavoriteRestaurants(String email) {
+        return getAllRestaurantsById(savedRestaurantsService.getAllRelationsForUserEmail(email))
+                .stream().toList();
+    }
+
+    public List<RestaurantResponseDTO> getAllRestaurantsFiltered(FilterRestaurantDTO filterRestaurantDTO,
+                                                                 Boolean isFavorite,
+                                                                 String email) {
+
+        List<Restaurant> restaurantsFiltered = isFavorite ?
+                getAllFavoriteRestaurants(email) : restaurantRepository.findAll();
 
         return restaurantsFiltered.stream().filter((Restaurant res) -> {
             if (!(filterRestaurantDTO.getFilterName().equals("") || filterRestaurantDTO.getFilterName().isEmpty())) {
-                return res.getName().toLowerCase(Locale.getDefault())
+                return res.getName()
+                        .toLowerCase(Locale.getDefault())
                         .contains(filterRestaurantDTO.getFilterName()
                                 .toLowerCase(Locale.getDefault()));
             }
@@ -93,15 +133,29 @@ public class RestaurantService {
         }).filter((Restaurant res) -> {
             if (filterRestaurantDTO.getRating() != null && filterRestaurantDTO.getRating() != 0) {
                 try {
-                    return filterRestaurantDTO
-                            .getRating()
-                            .equals(reviewRestTemplateService.getRatingForRestaurant(res.getId()));
+                    return filterRestaurantDTO.getRating().equals(
+                            reviewRestTemplateService.getRatingForRestaurant(res.getId())
+                    );
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             }
 
             return true;
+        }).filter((Restaurant res) -> {
+            if (!(filterRestaurantDTO.getFilterAddress().equals("") ||
+                    filterRestaurantDTO.getFilterAddress().isEmpty())) {
+                return res.getAddressLocation().toLowerCase(Locale.getDefault())
+                        .contains(filterRestaurantDTO.getFilterAddress().toLowerCase(Locale.getDefault()));
+            }
+
+            return true;
+        }).filter((Restaurant res) -> {
+            if (filterRestaurantDTO.getShowActive()) {
+                return res.getStatus().equals("ACTIVE");
+            } else {
+                return res.getStatus().equals("INACTIVE");
+            }
         }).map((Restaurant res) -> {
             RestaurantResponseDTO r = modelMapper.map(res, RestaurantResponseDTO.class);
             try {
@@ -159,8 +213,7 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void deleteRestaurant(DeleteRestaurantDTO deleteRestaurantDTO,
-                                 @Valid String emailAddress) throws JSONException {
+    public void deleteRestaurant(DeleteRestaurantDTO deleteRestaurantDTO, @Valid String emailAddress) throws JSONException {
 
         if (restaurantRepository.findById(deleteRestaurantDTO.getId()).isEmpty()) {
             throw new NotFoundException(ObjectType.RESTAURANT, deleteRestaurantDTO.getId());
@@ -172,9 +225,9 @@ public class RestaurantService {
             throw new InvalidUserAccount();
         }
 
-        if (Boolean.FALSE.equals(restaurantRepository.existsByOwnerEmailAddressAndId(
-                emailAddress,
-                deleteRestaurantDTO.getId()))) {
+        if (Boolean.FALSE.equals(
+                restaurantRepository.existsByOwnerEmailAddressAndId(emailAddress, deleteRestaurantDTO.getId()))
+        ) {
             throw new InvalidDeleteRequestException();
         }
 

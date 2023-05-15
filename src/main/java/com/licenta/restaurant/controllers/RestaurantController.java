@@ -1,9 +1,6 @@
 package com.licenta.restaurant.controllers;
 
-import com.licenta.restaurant.models.DeleteRestaurantDTO;
-import com.licenta.restaurant.models.FilterRestaurantDTO;
-import com.licenta.restaurant.models.Restaurant;
-import com.licenta.restaurant.models.RestaurantStatusDTO;
+import com.licenta.restaurant.models.*;
 import com.licenta.restaurant.models.createRequestDTO.CreateRestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantDTO;
 import com.licenta.restaurant.models.responseDTO.RestaurantResponseDTO;
@@ -38,7 +35,7 @@ public class RestaurantController {
             @RequestBody FilterRestaurantDTO filterRestaurantDTO) {
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(restaurantService.getAllRestaurantsFiltered(filterRestaurantDTO));
+                .body(restaurantService.filterAllRestaurants(filterRestaurantDTO));
     }
 
     @GetMapping("/id/{id}")
@@ -66,6 +63,26 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurantService.saveStatus(restaurantStatusDTO));
     }
 
+    @PostMapping("/addFavorite")
+    public @ResponseBody ResponseEntity<String> addRecipeToFavorite(@RequestBody AddFavoriteDTO addFavoriteDTO) {
+        restaurantService.addFavoriteRestaurant(addFavoriteDTO);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/favoriteNames")
+    public @ResponseBody ResponseEntity<List<String>> getAllRelationsNamesForUserEmail(@RequestParam String email) {
+
+        return ResponseEntity.ok().body(restaurantService.getAllFavoriteRestaurantsNames(email));
+    }
+
+    @PostMapping("/favoriteListFiltered")
+    public @ResponseBody ResponseEntity<List<RestaurantResponseDTO>> getAllRelationsFilteredForUserEmail(
+            @RequestBody FilterRestaurantDTO recipeFilter,
+            @RequestParam String email) {
+
+        return ResponseEntity.ok().body(restaurantService.filterAllFavoriteRecipes(recipeFilter, email));
+    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteRestaurant(@RequestBody DeleteRestaurantDTO deleteRestaurantDTO,

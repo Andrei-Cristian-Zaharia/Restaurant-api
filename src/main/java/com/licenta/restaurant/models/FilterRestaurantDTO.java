@@ -6,5 +6,7 @@ import lombok.Data;
 public class FilterRestaurantDTO {
 
     private String filterName;
+    private String filterAddress;
+    private Boolean showActive;
     private Integer rating;
 }
