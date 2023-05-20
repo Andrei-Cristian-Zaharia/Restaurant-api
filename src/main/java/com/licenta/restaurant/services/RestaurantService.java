@@ -76,6 +76,21 @@ public class RestaurantService {
         return restaurantRepository.save(restaurant);
     }
 
+    public Restaurant save(SaveRestaurantDTO dto) {
+        Restaurant restaurant = getRestaurantById(dto.getId());
+        restaurant.setAddressLocation(dto.getAddress());
+        restaurant.setInstagramLink(dto.getInstagramLink());
+        restaurant.setFacebookLink(dto.getFacebookLink());
+        restaurant.setWebsiteAddress(dto.getWebLink());
+        restaurant.setFrontImage(dto.getFrontImage());
+        restaurant.setBannerImage(dto.getBannerImage());
+        restaurant.setDescription(dto.getDescription());
+        restaurant.setPageText(dto.getPageText());
+        restaurant.setEmployAnnounce(dto.getEmploymentText());
+
+        return restaurantRepository.save(restaurant);
+    }
+
     public Boolean addFavoriteRestaurant(AddFavoriteDTO addFavoriteDTO) {
         if (Boolean.FALSE.equals(personRestTemplateService.getPersonById((addFavoriteDTO.getUserId())) != null)) {
             throw new NotFoundException(ObjectType.PERSON, addFavoriteDTO.getUserId());
@@ -200,6 +215,7 @@ public class RestaurantService {
         Restaurant restaurant = modelMapper.map(createRestaurantDTO, Restaurant.class);
         restaurant.setPartnerSince(LocalDate.now());
         restaurant.setOwner(person);
+        restaurant.setStatus("WAITING");
 
         try {
             personRestTemplateService.changePersonStatus(true, createRestaurantDTO.getPerson_id());

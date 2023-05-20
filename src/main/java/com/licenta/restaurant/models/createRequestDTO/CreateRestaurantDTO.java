@@ -9,12 +9,6 @@ public class CreateRestaurantDTO {
 
     private String name;
 
-    private String description;
-
-    private String employAnnounce;
-
-    private String pageText;
-
     private String frontImage;
 
     private String bannerImage;
@@ -26,8 +20,6 @@ public class CreateRestaurantDTO {
     private String websiteAddress;
 
     private String addressLocation;
-
-    private String status;
 
     private String schedule;
 

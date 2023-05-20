@@ -63,6 +63,11 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurantService.saveStatus(restaurantStatusDTO));
     }
 
+    @PostMapping("/save")
+    public @ResponseBody ResponseEntity<Restaurant> save(@RequestBody SaveRestaurantDTO saveRestaurantDTO) {
+        return ResponseEntity.ok().body(restaurantService.save(saveRestaurantDTO));
+    }
+
     @PostMapping("/addFavorite")
     public @ResponseBody ResponseEntity<String> addRecipeToFavorite(@RequestBody AddFavoriteDTO addFavoriteDTO) {
         restaurantService.addFavoriteRestaurant(addFavoriteDTO);
