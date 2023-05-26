@@ -251,4 +251,16 @@ public class RestaurantService {
 
         restaurantRepository.deleteById(deleteRestaurantDTO.getId());
     }
+
+    @Transactional
+    public void deleteRestaurantByAdmin(Long id) throws JSONException {
+        if (restaurantRepository.findById(id).isEmpty()) {
+            throw new NotFoundException(ObjectType.RESTAURANT, id);
+        }
+
+        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
+
+        personRestTemplateService.changePersonStatus(false, restaurant.get().getOwner().getId());
+        restaurantRepository.deleteById(id);
+    }
 }

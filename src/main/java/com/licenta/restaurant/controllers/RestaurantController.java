@@ -97,4 +97,9 @@ public class RestaurantController {
 
         return ResponseEntity.ok().body("Restaurant deleted !");
     }
+
+    @DeleteMapping("/admin/delete")
+    public void deleteRestaurant(@RequestParam Long id) throws JSONException {
+        restaurantService.deleteRestaurantByAdmin(id);
+    }
 }
