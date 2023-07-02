@@ -191,7 +191,6 @@ public class RestaurantService {
         }
 
         if (restaurant.get().getMenu() != null) {
-            // TODO: HANDLE EXCEPTION
             return;
         }
 
