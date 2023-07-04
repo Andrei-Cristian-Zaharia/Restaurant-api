@@ -21,5 +21,6 @@ restaurant:
     - "/menu/create"
     - "/menu/delete"
     - "/menu/info"
+    - "/menu/addItem"
     - "/restaurant/addFavorite"
     - "/savedRecipes/delete"

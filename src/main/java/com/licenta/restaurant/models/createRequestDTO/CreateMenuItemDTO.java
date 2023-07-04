@@ -18,4 +18,6 @@ public class CreateMenuItemDTO {
     private String description;
 
     private Long recipeId;
+
+    private Long menuId;
 }

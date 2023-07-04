@@ -3,6 +3,7 @@ package com.licenta.restaurant.controllers;
 import com.licenta.restaurant.models.Menu;
 import com.licenta.restaurant.models.UpdateMenuItemDTO;
 import com.licenta.restaurant.models.createRequestDTO.CreateMenuDTO;
+import com.licenta.restaurant.models.createRequestDTO.CreateMenuItemDTO;
 import com.licenta.restaurant.models.responseDTO.MenuCategorised;
 import com.licenta.restaurant.models.responseDTO.MenuResponseDTO;
 import com.licenta.restaurant.services.MenuContainerService;
@@ -38,6 +39,13 @@ public class MenuController {
     public @ResponseBody ResponseEntity<String> updateMenuItems(@RequestBody UpdateMenuItemDTO updateMenuItemDTO) {
 
         menuService.updateMenuItems(updateMenuItemDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Menu updated");
+    }
+
+    @PostMapping("/addItem")
+    public @ResponseBody ResponseEntity<String> addItem(@RequestBody CreateMenuItemDTO dto) {
+
+        menuService.addMenuItem(dto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Menu updated");
     }
 

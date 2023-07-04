@@ -1,5 +1,7 @@
 package com.licenta.restaurant.services;
 
+import com.licenta.restaurant.enums.ObjectType;
+import com.licenta.restaurant.exceptionHandlers.NotFoundException;
 import com.licenta.restaurant.models.MenuItem;
 import com.licenta.restaurant.models.createRequestDTO.CreateMenuItemDTO;
 import com.licenta.restaurant.models.responseDTO.MenuItemDTO;
@@ -9,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MenuItemService {
@@ -29,6 +32,12 @@ public class MenuItemService {
 
     public List<MenuItem> getAllById(List<Long> id) {
         return menuItemRepository.findAllById(id);
+    }
+
+    public MenuItem getById(Long id) {
+        Optional<MenuItem> menuItem = menuItemRepository.findById(id);
+
+        return menuItem.orElseThrow(() -> {throw new NotFoundException(ObjectType.MENU_ITEM, id);});
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import com.licenta.restaurant.enums.ObjectType;
 import com.licenta.restaurant.exceptionHandlers.NotFoundException;
 import com.licenta.restaurant.models.*;
 import com.licenta.restaurant.models.createRequestDTO.CreateMenuDTO;
+import com.licenta.restaurant.models.createRequestDTO.CreateMenuItemDTO;
 import com.licenta.restaurant.models.responseDTO.MenuCategorised;
 import com.licenta.restaurant.models.responseDTO.MenuResponseDTO;
 import com.licenta.restaurant.repositories.MenuRepository;
@@ -89,6 +90,22 @@ public class MenuService {
 
         toRemove.forEach((MenuItem item) -> menuContainerService.delete(
                 menuContainerService.findByMenu_IdAndMenuItem_Id(menu.getId(), item.getId())));
+    }
+
+    public void addMenuItem(CreateMenuItemDTO dto) {
+        Optional<Menu> menu = menuRepository.findById(dto.getMenuId());
+
+        if (menu.isEmpty()) {
+            throw new NotFoundException(ObjectType.MENU, dto.getMenuId());
+        }
+
+        MenuItem item = menuItemService.createMenuItem(dto);
+
+        MenuContainer menuContainer = new MenuContainer();
+        menuContainer.setMenuItem(item);
+        menuContainer.setMenu(menu.get());
+
+        menuContainerService.save(menuContainer);
     }
 
     @Transactional
